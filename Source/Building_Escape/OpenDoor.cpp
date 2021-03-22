@@ -23,7 +23,7 @@ void UOpenDoor::BeginPlay()
 
 	InitialYaw = GetOwner()->GetActorRotation().Yaw;
 	CurrentYaw = InitialYaw;
-	TargetYaw = InitialYaw + TargetYaw;
+	OpenAngle = InitialYaw + OpenAngle;
 
 	if (!PressurePlate)
 	{
@@ -59,13 +59,7 @@ void UOpenDoor::TickComponent(float DeltaTime, ELevelTick TickType, FActorCompon
 void UOpenDoor::OpenDoor(float DeltaTime)
 {
 	// OPENING THE DOOR
-	// Printing the three elements of rotation (Roll, Pitch, Yaw) to see how it moves
-	//UE_LOG(LogTemp, Warning, TEXT("The rotation is: %s"), *GetOwner()->GetActorRotation().ToString());
-
-	// Printing how Yaw changes since is the one rotating the door to open it
-	//UE_LOG(LogTemp, Warning, TEXT("Yaw is: %f"), GetOwner()->GetActorRotation().Yaw);
-
-	CurrentYaw = FMath::Lerp(CurrentYaw, TargetYaw, DeltaTime * 0.8f);
+	CurrentYaw = FMath::Lerp(CurrentYaw, OpenAngle, DeltaTime * DoorOpenSpeed);
 	FRotator DoorRotation = GetOwner()->GetActorRotation();
 	DoorRotation.Yaw = CurrentYaw;
 	GetOwner()->SetActorRotation(DoorRotation);
@@ -74,13 +68,13 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 	// Obtaining the current Yaw value of the Actor (the door)
 	//float CurrentYaw = GetOwner()->GetActorRotation().Yaw;
 	// Creating an FRotator to rotate the door
-	//FRotator OpenDoor(0.f, TargetYaw, 0.f);
+	//FRotator OpenDoor(0.f, OpenAngle, 0.f);
 	// Setting the new Yaw value with exponential interpolation - this one is dependant of the frame rate of the pc
-	//OpenDoor.Yaw = FMath::Lerp(CurrentYaw, TargetYaw, 0.05f);
+	//OpenDoor.Yaw = FMath::Lerp(CurrentYaw, OpenAngle, 0.05f);
 	// Setting the new Yaw value with an actual linear interpolation
-	//OpenDoor.Yaw = FMath::FInterpConstantTo(CurrentYaw, TargetYaw, DeltaTime, 45);
+	//OpenDoor.Yaw = FMath::FInterpConstantTo(CurrentYaw, OpenAngle, DeltaTime, 45);
 	// Another way to set the new Yaw value with linear interpolation
-	//OpenDoor.Yaw = FMath::FInterpTo(CurrentYaw, TargetYaw, DeltaTime, 2);
+	//OpenDoor.Yaw = FMath::FInterpTo(CurrentYaw, OpenAngle, DeltaTime, 2);
 	// Opening the door with the desired coordinates
 	//GetOwner()->SetActorRotation(OpenDoor);
 	//-----------------------------------------------------------------------------------------------------------------
@@ -88,7 +82,7 @@ void UOpenDoor::OpenDoor(float DeltaTime)
 
 void UOpenDoor::CloseDoor(float DeltaTime)
 {
-	CurrentYaw = FMath::Lerp(CurrentYaw, InitialYaw, DeltaTime * 2.f);
+	CurrentYaw = FMath::Lerp(CurrentYaw, InitialYaw, DeltaTime * DoorClosingSpeed);
 	FRotator DoorRotation = GetOwner()->GetActorRotation();
 	DoorRotation.Yaw = CurrentYaw;
 	GetOwner()->SetActorRotation(DoorRotation);
